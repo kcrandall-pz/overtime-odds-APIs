@@ -3,15 +3,19 @@ const sql = require('mssql');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const secretKey = process.env.JWT_SECRET_KEY; // Ensure you have a secret key set in your environment variables
 
 app.http('signin', {
     methods: ['POST'],
     authLevel: 'anonymous',
     handler: async (request, context) => {
         context.log(`Http function processed request for url "${request.url}"`);
-
+        console.log(`Secret Key: ${process.env.JWT_SECRET_KEY}`);
+        console.log(`con Key: ${process.env.DBConnectionString}`);
+        
+        const secretKey = process.env.JWT_SECRET_KEY; // Ensure you have a secret key set in your environment variables
         const connString = process.env.DBConnectionString;
+
+        // console.log('variable vals', secretKey, connString);
 
         let requestBody;
         try {
