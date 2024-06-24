@@ -2,20 +2,15 @@ const { app } = require('@azure/functions');
 const sql = require('mssql');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+require('dotenv').config();
 
 app.http('signin', {
     methods: ['POST'],
     authLevel: 'anonymous',
-    handler: async (request, context) => {
-        context.log(`Http function processed request for url "${request.url}"`);
-        console.log(`Secret Key: ${process.env.JWT_SECRET_KEY}`);
-        console.log(`con Key: ${process.env.DBConnectionString}`);
+    handler: async (request) => {
         
-        const secretKey = process.env.JWT_SECRET_KEY; // Ensure you have a secret key set in your environment variables
+        const secretKey = process.env.JWT_SECRET_KEY;
         const connString = process.env.DBConnectionString;
-
-        // console.log('variable vals', secretKey, connString);
 
         let requestBody;
         try {
@@ -23,14 +18,14 @@ app.http('signin', {
         } catch (error) {
             return {
                 status: 400,
-                body: "Invalid JSON input"
+                body: JSON.stringify({ message: "Invalid JSON input" })
             };
         }
 
         if (!requestBody.email || !requestBody.password) {
             return {
                 status: 400,
-                body: "Please provide both email and password"
+                body: JSON.stringify({ message: "Please provide both email and password" })
             };
         }
 
@@ -40,7 +35,7 @@ app.http('signin', {
         } catch (error) {
             return {
                 status: 500,
-                body: "Database connection failed"
+                body: JSON.stringify({ message: "Database connection failed" })
             };
         }
 
@@ -52,7 +47,7 @@ app.http('signin', {
             if (result.recordset.length === 0) {
                 return {
                     status: 401,
-                    body: "Invalid email or password"
+                    body: JSON.stringify({ message: "Invalid email or password" })
                 };
             }
 
@@ -62,7 +57,7 @@ app.http('signin', {
             if (!isPasswordValid) {
                 return {
                     status: 401,
-                    body: "Invalid email or password"
+                    body: JSON.stringify({ message: "Invalid email or password" })
                 };
             }
 
@@ -70,15 +65,15 @@ app.http('signin', {
 
             return {
                 status: 200,
-                body: {
+                body: JSON.stringify({
                     message: "Login successful",
                     token: token
-                }
+                })
             };
         } catch (error) {
             return {
                 status: 500,
-                body: `An error occurred during login: ${error.message}`
+                body: JSON.stringify({ message: `An error occurred during login: ${error.message}` })
             };
         }
     }
