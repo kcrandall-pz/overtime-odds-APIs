@@ -67,7 +67,13 @@ app.http('signin', {
                 status: 200,
                 body: JSON.stringify({
                     message: "Login successful",
-                    token: token
+                    token: token,
+                    user: {
+                        id: user.id,
+                        email: user.email,
+                        display_name: user.display_name,
+                        profile_pic: user.profile_picture_url
+                    }
                 })
             };
         } catch (error) {
