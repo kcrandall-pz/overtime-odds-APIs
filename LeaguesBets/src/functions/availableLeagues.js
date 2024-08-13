@@ -1,5 +1,6 @@
-const { app } = require('@azure/functions');
+const { app, input } = require('@azure/functions');
 const sql = require('mssql');
+require('dotenv').config();
 
 app.http('availableLeagues', {
     methods: ['GET'],
@@ -34,11 +35,11 @@ app.http('availableLeagues', {
         try {
             const checkAvailableLeagues = await pool.request()
                 .input('user_id', sql.VarChar, userId)
-                .query(`SELECT * FROM Leagues WHERE id NOT IN (SELECT league_id FROM LeagueMembers WHERE user_id = @user_id)`);
+                .query(`SELECT * FROM dbo.Leagues WHERE id NOT IN (SELECT league_id FROM LeagueMembers WHERE user_id = @user_id)`);
 
             return {
                 status: 200,
-                body: checkAvailableLeagues.recordset // return only the records
+                body: JSON.stringify(checkAvailableLeagues.recordset)
             };
         } catch (error) {
             return {

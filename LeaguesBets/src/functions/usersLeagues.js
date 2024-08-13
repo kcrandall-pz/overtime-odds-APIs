@@ -1,6 +1,6 @@
 const { app } = require('@azure/functions');
 
-app.http('userLeagues', {
+app.http('usersLeagues', {
     methods: ['GET', 'POST'],
     authLevel: 'anonymous',
     handler: async (request, context) => {

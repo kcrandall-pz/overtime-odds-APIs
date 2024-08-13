@@ -65,7 +65,7 @@ app.http('register', {
         } catch (error) {
             return {
                 status: 500,
-                body: `An error occurred while registering the user: ${error.message}`
+                body: `An error occurred while registering the user: ${error.message}. Please try again`
             };
         }
     }
