@@ -12,8 +12,6 @@ app.http('availableLeagues', {
 
         const userId = request.query.get('user_id');
 
-        context.log('Extracted userId:', userId); // Log to check what userId contains
-
         // Check if user_id is present
         if (!userId) {
             return {
