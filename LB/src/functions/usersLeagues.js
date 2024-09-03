@@ -1,8 +1,7 @@
-const { app, input } = require('@azure/functions');
+const { app } = require('@azure/functions');
 const sql = require('mssql');
-// require('dotenv').config();
 
-app.http('usersBets', {
+app.http('usersLeagues', {
     methods: ['GET'],
     authLevel: 'anonymous',
     handler: async (request, context) => {
@@ -31,36 +30,29 @@ app.http('usersBets', {
         }
 
         try {
-            const userBets = await pool.request()
+            const checkUsersLeagues = await pool.request()
                 .input('user_id', sql.VarChar, userId)
                 .query(`SELECT 
-                            b.bet_id,
-                            b.user_id,
-                            b.league_id,
+                            l.id AS league_id,
                             l.name AS league_name,
-                            b.game_id,
-                            b.bet_amount,
-                            b.team_bet_on,
-                            b.odds,
-                            b.bet_placed_at,
-                            b.result
+                            l.created_at AS league_creation_date,
+                            lm.joined_at AS user_joined_date
                         FROM 
-                            Bets b
+                            dbo.Leagues l
                         INNER JOIN 
-                            Leagues l ON b.league_id = l.id
+                            dbo.LeagueMembers lm ON l.id = lm.league_id
                         WHERE 
-                            b.user_id = @user_id
-                        ORDER BY 
-                            b.bet_placed_at DESC;`);
+                            lm.user_id = @user_id;`
+                    );
 
             return {
                 status: 200,
-                body: JSON.stringify(userBets.recordset)
+                body: JSON.stringify(checkUsersLeagues.recordset)
             };
         } catch (error) {
             return {
                 status: 500,
-                body: 'An error occurred while fetching user bets'
+                body: 'An error occurred while searching for user leagues'
             };
         }
     }

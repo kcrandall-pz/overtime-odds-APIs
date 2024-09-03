@@ -1,6 +1,5 @@
-const { app, input } = require('@azure/functions');
+const { app } = require('@azure/functions');
 const sql = require('mssql');
-// require('dotenv').config();
 
 app.http('leagueMembersAndLeaderboard', {
     methods: ['GET'],

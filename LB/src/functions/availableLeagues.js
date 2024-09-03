@@ -1,8 +1,7 @@
-const { app, input } = require('@azure/functions');
+const { app } = require('@azure/functions');
 const sql = require('mssql');
-// require('dotenv').config();
 
-app.http('usersLeagues', {
+app.http('availableLeagues', {
     methods: ['GET'],
     authLevel: 'anonymous',
     handler: async (request, context) => {
@@ -31,29 +30,18 @@ app.http('usersLeagues', {
         }
 
         try {
-            const checkUsersLeagues = await pool.request()
+            const checkAvailableLeagues = await pool.request()
                 .input('user_id', sql.VarChar, userId)
-                .query(`SELECT 
-                            l.id AS league_id,
-                            l.name AS league_name,
-                            l.created_at AS league_creation_date,
-                            lm.joined_at AS user_joined_date
-                        FROM 
-                            dbo.Leagues l
-                        INNER JOIN 
-                            dbo.LeagueMembers lm ON l.id = lm.league_id
-                        WHERE 
-                            lm.user_id = @user_id;`
-                    );
+                .query(`SELECT * FROM dbo.Leagues WHERE id NOT IN (SELECT league_id FROM LeagueMembers WHERE user_id = @user_id)`);
 
             return {
                 status: 200,
-                body: JSON.stringify(checkUsersLeagues.recordset)
+                body: JSON.stringify(checkAvailableLeagues.recordset)
             };
         } catch (error) {
             return {
                 status: 500,
-                body: 'An error occurred while searching for user leagues'
+                body: 'An error occurred while searching for available leagues'
             };
         }
     }

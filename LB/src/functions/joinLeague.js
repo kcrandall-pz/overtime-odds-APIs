@@ -1,6 +1,5 @@
 const { app } = require('@azure/functions');
 const sql = require('mssql');
-// require('dotenv').config();
 
 app.http('joinLeague', {
     methods: ['POST'],
